@@ -4,6 +4,7 @@ import connectDB from './Database/connectDB.js'
 import authRouter from  './route/authRoute.js'
 import messageRouter from './route/messageRoute.js'
 import cookieParser from 'cookie-parser'
+import userRouter from './route/userRout.js'
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(cookieParser())
 
 app.use('/api/auth',authRouter)
 app.use('/api/message',messageRouter)
+app.use('/api/user',userRouter)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
