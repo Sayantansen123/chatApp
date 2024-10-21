@@ -25,6 +25,7 @@ export const getUserBySearch = async(req,res) =>{
         message: error
     })
     console.log(error);
+    
  }
 }
 
