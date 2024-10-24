@@ -1,7 +1,61 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import axios from 'axios';
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify';
+
 
 const Register = () => {
+    
+    const navigate = useNavigate()
+    const [loading , setLoading] = useState(false);
+    const [inputData , setInputData] = useState({})
+  
+
+
+    const handelInput=(e)=>{
+        setInputData({
+            ...inputData , [e.target.id]:e.target.value
+        })
+    }
+    console.log(inputData);
+
+    const selectGender=(selectGender)=>{
+        setInputData((prev)=>({
+            ...prev , gender:selectGender === inputData.gender ? '' : selectGender
+        }))
+    }
+    
+
+    const handelSubmit=async(e)=>{
+        e.preventDefault();
+        setLoading(true)
+        if(inputData.password !== inputData.confpassword.toLowerCase()){
+            setLoading(false)
+            return toast.error("Password Dosen't match")
+        }
+        try {
+            const register = await axios.post(`/api/auth/register`,inputData);
+            const data = register.data;
+            if(data.success === false){
+                setLoading(false)
+                toast.error(data.message)
+                console.log(data.message);
+            }
+            toast.success(data?.message)
+            localStorage.setItem('chatapp',JSON.stringify(data))
+            
+            setLoading(false)
+            navigate('/login')
+        } catch (error) {
+            setLoading(false)
+            console.log(error);
+            toast.error(error?.response?.data?.message)
+        }
+    }
+
+
+
+
     return (
         <div
             style={{ animation: 'slideInFromLeft 1s ease-out' }}
@@ -16,13 +70,14 @@ const Register = () => {
             <p style={{ animation: 'appear 3s ease-out' }} className="text-center text-gray-200">
                 Sign in to your account
             </p>
-            <form className="space-y-6" >
+            <form onSubmit={handelSubmit}  className="space-y-6" >
                 <div className="relative">
                     <input
                         placeholder="Enter your name"
                         className="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
                         required
                         id="fullname"
+                        onChange={handelInput}
                         name="fullname"
                         type="text"
                         autoComplete='off'
@@ -41,6 +96,7 @@ const Register = () => {
                         className="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
                         required
                         id="username"
+                        onChange={handelInput}
                         name="username"
                         type="text"
                         autoComplete='off'
@@ -63,6 +119,7 @@ const Register = () => {
                         required
                         id="email"
                         name="email"
+                        onChange={handelInput}
                         type="email"
                         autoComplete='off'
                     />
@@ -81,6 +138,7 @@ const Register = () => {
                         className="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
                         required
                         id="password"
+                        onChange={handelInput}
                         name="password"
                         type="password"
 
@@ -99,8 +157,9 @@ const Register = () => {
                         placeholder="Password"
                         className="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
                         required
-                        id="confirmpassword"
-                        name="confirmpassword"
+                        id="confmpassword"
+                        onChange={handelInput}
+                        name="confmpassword"
                         type="password"
 
                     />
@@ -117,7 +176,8 @@ const Register = () => {
                     <label className="cursor-pointer label flex gap-2">
                         <span className="label-text font-semibold text-white">Male</span>
                         <input
-                            
+                            onChange={()=>selectGender('male')}
+                            checked={inputData.gender === 'male'}
                             type='checkbox'
                             className="checkbox checkbox-info" />
                     </label>
