@@ -3,12 +3,14 @@ import React, { useState } from 'react'
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
 
   const navigate = useNavigate();
   const [userInput,setUserInput] = useState({});
   const [loading,setLoading] = useState(false);
+  const {setAuthUser} = useAuth();
 
   const handelInput = (e) =>{
        setUserInput({
@@ -29,6 +31,7 @@ const Login = () => {
       }
       toast.success(data.message);
       localStorage.setItem("chatApp",JSON.stringify(data))
+      setAuthUser(data)
       setLoading(false)
       navigate('/')
 
@@ -99,17 +102,8 @@ const Login = () => {
             Password
           </label>
         </div>
-        <div className="flex items-center justify-between">
-          <label className="flex items-center text-sm text-gray-200">
-            <input
-              className="form-checkbox h-4 w-4 text-purple-600 bg-gray-800 border-gray-300 rounded"
-              type="checkbox"
-            />
-            <span className="ml-2">Remember me</span>
-          </label>
-          <a className="text-sm text-purple-200 hover:underline" href="#">
-            Forgot your password?
-          </a>
+        <div className="flex items-center justify-between w-2">
+          
         </div>
         <button
           className="w-full py-2 px-4 bg-purple-500 hover:bg-purple-700 rounded-md shadow-lg text-white font-semibold transition duration-200"

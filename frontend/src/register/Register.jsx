@@ -2,13 +2,15 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 
 
 const Register = () => {
     
     const navigate = useNavigate()
     const [loading , setLoading] = useState(false);
-    const [inputData , setInputData] = useState({})
+    const [inputData , setInputData] = useState({});
+    const {setAuthUser} = useAuth();
   
 
 
@@ -43,13 +45,13 @@ const Register = () => {
             }
             toast.success(data?.message)
             localStorage.setItem('chatapp',JSON.stringify(data))
-            
+            setAuthUser(data)
             setLoading(false)
             navigate('/login')
         } catch (error) {
             setLoading(false)
             console.log(error);
-            toast.error(error?.response?.data?.message)
+            toast.error("User name or email already exist")
         }
     }
 
@@ -157,9 +159,9 @@ const Register = () => {
                         placeholder="Password"
                         className="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
                         required
-                        id="confmpassword"
+                        id="confpassword"
                         onChange={handelInput}
-                        name="confmpassword"
+                        name="confpassword"
                         type="password"
 
                     />
@@ -185,6 +187,8 @@ const Register = () => {
                         <span className="label-text font-semibold text-white">Female</span>
                         <input
                             type='checkbox'
+                            checked={inputData.gender === 'female'}
+                            onChange={()=>selectGender('female')}
                             className="checkbox checkbox-info" />
                     </label>
                 </div>
@@ -194,7 +198,7 @@ const Register = () => {
                     className="w-full py-2 px-4 bg-purple-500 hover:bg-purple-700 rounded-md shadow-lg text-white font-semibold transition duration-200"
                     type="submit"
                 >
-                    Submit
+                     {loading ? "loading..":"Register"}
                 </button>
             </form>
             <div className="text-center text-gray-300">
