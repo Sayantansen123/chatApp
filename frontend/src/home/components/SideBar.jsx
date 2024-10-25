@@ -2,9 +2,14 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
+import { IoArrowBackSharp } from 'react-icons/io5';
+import { BiLogOut } from "react-icons/bi";
+import { useNavigate } from 'react-router-dom'
+
 
 const SideBar = () => {
-    const { authUser } = useAuth();
+    const navigate = useNavigate();
+    const { authUser ,setAuthUser } = useAuth();
     const [searchInput, setSearchInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [searchUser, setSearchUser] = useState([]);
@@ -62,6 +67,38 @@ const SideBar = () => {
 
     }
 
+    const handSearchback = () => {
+        setSearchUser([]);
+        setSearchInput('')
+    }
+
+    const handelLogOut = async () => {
+
+        const confirmlogout = window.prompt("type 'UserName' To LOGOUT");
+        if (confirmlogout === authUser.username) {
+            setLoading(true)
+            try {
+                const logout = await axios.post('/api/auth/logout')
+                const data = logout.data;
+                if (data?.success === false) {
+                    setLoading(false)
+                    console.log(data?.message);
+                }
+                toast.info(data?.message)
+                localStorage.removeItem('chatApp')
+                setAuthUser(null)
+                setLoading(false)
+                navigate('/login')
+            } catch (error) {
+                setLoading(false)
+                console.log(error);
+            }
+        } else {
+            toast.info("LogOut Cancelled")
+        }
+
+    }
+
     console.log(searchUser)
 
     return (
@@ -95,13 +132,47 @@ const SideBar = () => {
             </div>
             <div className="divider px-3"></div>
             {searchUser?.length > 0 ?
-                (<></>) :
+                (<>
+                <div className="min-h-[70%] max-h-[80%] m overflow-y-auto scrollbar ">
+                <div className='w-auto'>
+                {searchUser.map((user, index) => (
+                                       <div key={user._id}>
+                                            <div
+                                                onClick={() => handleUserClick(user)}
+                                                className={`flex gap-3 
+                                                items-center rounded 
+                                                p-2 py-1 cursor-pointer
+                                                ${selectUserId === user?._id ? 'bg-sky-500' : ''
+                                                    } `}>
+                                                <div className="avatar">
+                                                    <div className="w-12 rounded-full">
+                                                        <img src={user.profilepic} alt='user.img' />
+                                                    </div>
+                                                </div>
+                                                <div className='flex flex-col flex-1'>
+                                                    <p className='font-bold text-gray-950'>{user.username}</p>
+                                                </div>
+
+
+                                            </div>
+                                            <div className='divider divide-solid px-3 h-[1px]'></div>
+                                        </div>
+                                    ))}
+                    </div>
+                    </div>
+                    <div className='mt-auto px-1 py-1 flex'>
+                        <button onClick={handSearchback} className='bg-white rounded-full px-2 py-1 self-center'>
+                            <IoArrowBackSharp size={25} />
+                        </button>
+
+                    </div>
+                </>) :
                 (<>
                     <div className="min-h-[70%] max-h-[80%] m overflow-y-auto scrollbar ">
                         <div className='w-auto'>
                             {chatUser.length === 0 ?
                                 (<>
-                                    <div className='font-bold items-center flex flex-col text-xl text-yellow-500'>
+                                    <div className='font-bold flex items-center justify-center flex-col text-xl text-black h-full'>
                                         <h1>Why are you Alone!!🤔</h1>
                                         <h1>Search username to chat</h1>
                                     </div>
@@ -136,6 +207,13 @@ const SideBar = () => {
                             }
 
                         </div>
+                    </div>
+
+                    <div>
+                    <button onClick={handelLogOut} className='hover:bg-black pl-2 w-12 cursor-pointer hover:text-white rounded-lg'>
+                            <BiLogOut size={25} />
+                        </button>
+                        <p className='text-sm font-bold'>Logout</p>
                     </div>
 
                 </>)
