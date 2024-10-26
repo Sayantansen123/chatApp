@@ -1,11 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import SideBar from './components/SideBar';
 import MessageContainer from './components/MessageContainer';
 
 const Home = () => {
 
-    const { authUser } = useAuth();
+    const [selectedUser,setSelectedUser] = useState(null);
+    const [isSidebarVisible,setIsSidebarVisible] = useState(true);
+
+    const handelUserSelect=(user)=>{
+        setSelectedUser(user);
+        setIsSidebarVisible(false);
+      }
+      const handelShowSidebar=()=>{
+        setIsSidebarVisible(true);
+        setSelectedUser(null);
+      } 
+
     return (
         <div className='flex justify-between min-w-full
         md:min-w-[550px] md:max-w-[65%]
@@ -15,18 +26,15 @@ const Home = () => {
         backdrop-filter backdrop-blur-lg 
         bg-opacity-0'
         >
-            <div>
-                <SideBar />
-
-            </div>
-            <div>
-
-                <MessageContainer />
-            </div>
-
-
-
-        </div>
+            <div className={`w-full py-2 md:flex ${isSidebarVisible ? '' : 'hidden'}`}>
+      <SideBar onSelectUser={handelUserSelect}/>
+      </div>
+      <div className={`divider divider-horizontal px-3 md:flex
+         ${isSidebarVisible ? '' : 'hidden'} ${selectedUser ? 'block' : 'hidden'}`}></div>
+      <div className={`flex-auto ${selectedUser ? '' : 'hidden md:flex'} bg-gray-200}`}>
+      <MessageContainer onBackUser={handelShowSidebar}/>
+      </div>
+    </div>
     )
 }
 
