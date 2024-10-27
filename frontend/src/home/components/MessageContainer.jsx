@@ -4,10 +4,13 @@ import { useAuth } from '../../context/AuthContext';
 import { TiMessages } from "react-icons/ti";
 import { IoArrowBackSharp,IoSend } from 'react-icons/io5';
 import axios from 'axios';
+import notify from '../../assets/sound/notification.mp3';
+import { useSocketContext } from '../../context/socketContext';
 
 const MessageContainer = ({ onBackUser }) => {
   const { messages, selectedConversation, setMessage, setSelectedConversation } = userConversation();
   const { authUser } = useAuth();
+  const {socket} = useSocketContext();
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendData, setSnedData] = useState("")
@@ -18,6 +21,17 @@ const MessageContainer = ({ onBackUser }) => {
         lastMessageRef?.current?.scrollIntoView({behavior:"smooth"})
     },100)
 },[messages])
+
+
+useEffect(()=>{
+  socket?.on("newMessage",(newMessage)=>{
+    const sound = new Audio(notify);
+    sound.play();
+    setMessage([...messages,newMessage])
+  })
+
+  return ()=> socket?.off("newMessage");
+},[socket,setMessage,messages])
 
   useEffect(() => {
     const getMessages = async () => {

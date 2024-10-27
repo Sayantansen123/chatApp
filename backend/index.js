@@ -5,9 +5,12 @@ import authRouter from  './route/authRoute.js'
 import messageRouter from './route/messageRoute.js'
 import cookieParser from 'cookie-parser'
 import userRouter from './route/userRout.js'
+import path from 'path'
+import {app , server} from './Socket/socket.js'
 
-const app = express()
 
+
+const __dirname = path.resolve();
 
 dotenv.config() // configuring the enviorement variables
 
@@ -22,9 +25,16 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+app.use(express.static(path.join(__dirname,"/frontend/dist")))
+
+app.get("*",(req,res)=>{
+    res.sendFile(path.join(__dirname,"frontend","dist","index.html"))
+})
+
+
 const PORT = process.env.PORT || 3000
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   connectDB();
   console.log(`Example app listening on port ${PORT}`)
 })

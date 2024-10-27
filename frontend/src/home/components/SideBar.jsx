@@ -111,13 +111,13 @@ const SideBar = ({ onSelectUser }) => {
             <div className='flex justify-between gap-2 pt-2'>
 
 
-                <form onSubmit={handleSearchSubmit} className="flex items-center justify-center h-10 bg-white rounded-md shadow-md overflow-hidden cursor-pointer pl-4" >
+                <form onSubmit={handleSearchSubmit} className="flex items-center justify-center h-10 bg-blue-100 rounded-md shadow-md overflow-hidden cursor-pointer pl-4" >
                     <input
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
                         type="text"
                         placeholder="Search"
-                        className="w-40 h-full border-none outline-none text-sm caret-orange-600"
+                        className="w-40 h-full bg-blue-100 border-none outline-none text-sm caret-orange-600"
                     />
                     <span className="border-r h-5/12 w-0.5 bg-gray-300 mx-3"></span>
 
