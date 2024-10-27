@@ -6,18 +6,33 @@ import { IoArrowBackSharp } from 'react-icons/io5';
 import { BiLogOut } from "react-icons/bi";
 import { useNavigate } from 'react-router-dom'
 import userConversation from '../../Zustand/useConversation';
+import { useSocketContext } from '../../context/socketContext';
 
 
 const SideBar = ({ onSelectUser }) => {
     const navigate = useNavigate();
-    const { authUser ,setAuthUser } = useAuth();
+    const { authUser, setAuthUser } = useAuth();
     const [searchInput, setSearchInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [searchUser, setSearchUser] = useState([]);
     const [chatUser, setChatUser] = useState([]);
     const [selectUserId, setSelectUserId] = useState(null);
     const [newMessageUsers, setNewMessageUsers] = useState('');
-    const {messages , selectedConversation ,  setSelectedConversation} = userConversation();
+    const { messages, setMessage, selectedConversation, setSelectedConversation } = userConversation();
+    const { onlineUser, socket } = useSocketContext();
+
+    const nowOnline = chatUser.map((user) => (user._id));
+    //chats function
+    const isOnline = nowOnline.map(userId => onlineUser.includes(userId));
+    const [count,setCount] = useState(0);
+
+    useEffect(() => {
+        socket?.on("newMessage", (newMessage) => {
+            setNewMessageUsers(newMessage)
+            setCount(prevCount => prevCount + 1);
+        })
+        return () => socket?.off("newMessage");
+    }, [socket, messages])
 
     useEffect(() => {
         const chatUserHandler = async () => {
@@ -44,8 +59,10 @@ const SideBar = ({ onSelectUser }) => {
 
     const handleUserClick = (user) => {
         onSelectUser(user);
-         setSelectedConversation(user);
-          setSelectUserId(user._id);
+        setSelectedConversation(user);
+        setSelectUserId(user._id);
+        setNewMessageUsers('');
+        setCount(0);
     }
 
 
@@ -138,32 +155,33 @@ const SideBar = ({ onSelectUser }) => {
             <div className="divider px-3"></div>
             {searchUser?.length > 0 ?
                 (<>
-                <div className="min-h-[70%] max-h-[80%] m overflow-y-auto scrollbar ">
-                <div className='w-auto'>
-                {searchUser.map((user, index) => (
-                                       <div key={user._id}>
-                                            <div
-                                                onClick={() => handleUserClick(user)}
-                                                className={`flex gap-3 
+                    <div className="min-h-[70%] max-h-[80%] m overflow-y-auto scrollbar ">
+                        <div className='w-auto'>
+                            {searchUser.map((user, index) => (
+                                <div key={user._id}>
+                                    <div
+                                        onClick={() => handleUserClick(user)}
+                                        className={`flex gap-3 
                                                 items-center rounded 
                                                 p-2 py-1 cursor-pointer
                                                 ${selectUserId === user?._id ? 'bg-sky-500' : ''
-                                                    } `}>
-                                                <div className="avatar">
-                                                    <div className="w-12 rounded-full">
-                                                        <img src={user.profilepic} alt='user.img' />
-                                                    </div>
-                                                </div>
-                                                <div className='flex flex-col flex-1'>
-                                                    <p className='font-bold text-gray-950'>{user.username}</p>
-                                                </div>
-
-
+                                            } `}>
+                                        {/*Socket is Online*/}
+                                        <div className={`avatar ${isOnline[index] ? 'online' : ''}`}>
+                                            <div className="w-12 rounded-full">
+                                                <img src={user.profilepic} alt='user.img' />
                                             </div>
-                                            <div className='divider divide-solid px-3 h-[1px]'></div>
                                         </div>
-                                    ))}
-                    </div>
+                                        <div className='flex flex-col flex-1'>
+                                            <p className='font-bold text-gray-950'>{user.username}</p>
+                                        </div>
+
+
+                                    </div>
+                                    <div className='divider divide-solid px-3 h-[1px]'></div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                     <div className='mt-auto px-1 py-1 flex'>
                         <button onClick={handSearchback} className='bg-white rounded-full px-2 py-1 self-center'>
@@ -184,7 +202,7 @@ const SideBar = ({ onSelectUser }) => {
 
                                 </>) : (<>
                                     {chatUser.map((user, index) => (
-                                       <div key={user._id}>
+                                        <div key={user._id}>
                                             <div
                                                 onClick={() => handleUserClick(user)}
                                                 className={`flex gap-3 
@@ -192,7 +210,7 @@ const SideBar = ({ onSelectUser }) => {
                                                 p-2 py-1 cursor-pointer
                                                 ${selectUserId === user?._id ? 'bg-sky-500' : ''
                                                     } `}>
-                                                <div className="avatar">
+                                                <div className={`avatar ${isOnline[index] ? 'online' : ''}`}>
                                                     <div className="w-12 rounded-full">
                                                         <img src={user.profilepic} alt='user.img' />
                                                     </div>
@@ -200,7 +218,11 @@ const SideBar = ({ onSelectUser }) => {
                                                 <div className='flex flex-col flex-1'>
                                                     <p className='font-bold text-gray-950'>{user.username}</p>
                                                 </div>
-
+                                                <div>
+                                                    {newMessageUsers.reciverId === authUser._id && newMessageUsers.senderId === user._id ?
+                                                        <div className="rounded-full bg-green-700 text-sm text-white px-[4px]">{`+${count}`}</div> : <></>
+                                                    }
+                                                </div>
 
                                             </div>
                                             <div className='divider divide-solid px-3 h-[1px]'></div>
@@ -215,7 +237,7 @@ const SideBar = ({ onSelectUser }) => {
                     </div>
 
                     <div>
-                    <button onClick={handelLogOut} className='hover:bg-black pl-2 w-12 cursor-pointer hover:text-white rounded-lg'>
+                        <button onClick={handelLogOut} className='hover:bg-black pl-2 w-12 cursor-pointer hover:text-white rounded-lg'>
                             <BiLogOut size={25} />
                         </button>
                         <p className='text-sm font-bold'>Logout</p>
