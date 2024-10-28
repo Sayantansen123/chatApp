@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import Register from "./register/Register";
 import Home from "./home/Home";
 import { VerifyUser } from "./utils/VerifyUser";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 
 function App() {
