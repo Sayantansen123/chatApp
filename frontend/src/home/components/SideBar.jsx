@@ -22,8 +22,10 @@ const SideBar = ({ onSelectUser }) => {
     const { onlineUser, socket } = useSocketContext();
 
     const nowOnline = chatUser.map((user) => (user._id));
+    console.log(nowOnline)
     //chats function
-    const isOnline = nowOnline.map(userId => onlineUser.includes(userId));
+    const isOnline = nowOnline.map((userId) => (onlineUser.includes(userId)? userId : ""));
+    console.log(isOnline)
     const [count,setCount] = useState(0);
 
     useEffect(() => {
@@ -54,7 +56,7 @@ const SideBar = ({ onSelectUser }) => {
             }
         }
         chatUserHandler()
-    }, [])
+    }, [searchUser])
 
 
     const handleUserClick = (user) => {
@@ -72,6 +74,7 @@ const SideBar = ({ onSelectUser }) => {
         try {
             const search = await axios.get(`api/user/search?searchs=${searchInput}`);
             const data = search.data;
+            setChatUser(data)
             if (data.success === false) {
                 setLoading(false)
                 console.log(data.message);
@@ -167,7 +170,7 @@ const SideBar = ({ onSelectUser }) => {
                                                 ${selectUserId === user?._id ? 'bg-sky-500' : ''
                                             } `}>
                                         {/*Socket is Online*/}
-                                        <div className={`avatar ${isOnline[index] ? 'online' : ''}`}>
+                                        <div className={`avatar ${isOnline.includes((user._id).toString()) ? 'online' : ''}`}>
                                             <div className="w-12 rounded-full">
                                                 <img src={user.profilepic} alt='user.img' />
                                             </div>
@@ -203,6 +206,7 @@ const SideBar = ({ onSelectUser }) => {
                                 </>) : (<>
                                     {chatUser.map((user, index) => (
                                         <div key={user._id}>
+                                            {console.log(user._id)}
                                             <div
                                                 onClick={() => handleUserClick(user)}
                                                 className={`flex gap-3 
@@ -210,7 +214,7 @@ const SideBar = ({ onSelectUser }) => {
                                                 p-2 py-1 cursor-pointer
                                                 ${selectUserId === user?._id ? 'bg-sky-500' : ''
                                                     } `}>
-                                                <div className={`avatar ${isOnline[index] ? 'online' : ''}`}>
+                                                <div className={`avatar ${isOnline.includes((user._id).toString()) ? 'online' : ''}`}>
                                                     <div className="w-12 rounded-full">
                                                         <img src={user.profilepic} alt='user.img' />
                                                     </div>

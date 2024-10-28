@@ -148,7 +148,7 @@ const handelSubmit=async(e)=>{
         </div>
         <form onSubmit={handelSubmit} className='rounded-full text-black'>
             <div className='w-full rounded-full flex items-center bg-white'>
-              <input value={sendData} onChange={handelMessages} required id='message' type='text' 
+              <input value={sendData} onChange={handelMessages} autoComplete='off' required id='message' type='text' 
               className='w-full bg-transparent outline-none px-4 rounded-full'/>
               <button type='submit'>
                 {sending ? <div className='loading loading-spinner'></div>:
