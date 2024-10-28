@@ -10,21 +10,20 @@ import {app , server} from './Socket/socket.js'
 
 
 
-const __dirname = path.resolve();
+const __dirname = path.resolve(); // deployement purpose
 
 dotenv.config() // configuring the enviorement variables
 
-app.use(express.json())
-app.use(cookieParser())
+app.use(express.json()) //middleware to parse json
+app.use(cookieParser()) //middleware to parse cookies
 
-app.use('/api/auth',authRouter)
-app.use('/api/message',messageRouter)
-app.use('/api/user',userRouter)
+app.use('/api/auth',authRouter) //route redirected to authentication route 
+app.use('/api/message',messageRouter) //route redirected to message route
+app.use('/api/user',userRouter) //route redirected to user route
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
 
+
+//deployement purpose
 app.use(express.static(path.join(__dirname,"/frontend/dist")))
 
 app.get("*",(req,res)=>{
@@ -32,7 +31,7 @@ app.get("*",(req,res)=>{
 })
 
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000  //port 
 
 server.listen(PORT, () => {
   connectDB();

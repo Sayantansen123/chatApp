@@ -1,5 +1,7 @@
 import mongoose from "mongoose"
 
+
+//message schema where the message is stored between two user
 const messageSchema = mongoose.Schema({
     senderId:{
         type:mongoose.Schema.Types.ObjectId,

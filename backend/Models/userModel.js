@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+
+//user Model to store user data and let them login or create 
 const userSchema = mongoose.Schema({
     fullname:{
         type: String,
