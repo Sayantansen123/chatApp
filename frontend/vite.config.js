@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000/',
+        target: 'https://mechat-h3g6.onrender.com/',
         secure: false
       }
     }
