@@ -16,7 +16,7 @@ export const SocketContextProvider=({children})=>{
     const {authUser} = useAuth();
     useEffect(()=>{
         if(authUser){
-            const socket = io("http://localhost:3000/",{
+            const socket = io("https://meChat.onrender.com/",{
                 query:{
                     userId:authUser?._id,
                 }
