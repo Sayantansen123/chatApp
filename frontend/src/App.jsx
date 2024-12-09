@@ -1,16 +1,14 @@
-import Login from "./login/login"
+import Login from "./login/Login"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Route, Routes } from "react-router-dom";
 import Register from "./register/Register";
 import Home from "./home/Home";
 import { VerifyUser } from "./utils/VerifyUser";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
+
 
 
 function App() {
-
-
   return (
     <>
       <div className="p-2 w-screen h-screen flex items-center justify-center ">
