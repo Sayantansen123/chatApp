@@ -14,7 +14,7 @@ export const getUserBySearch = async (req, res) => {
                 {
                     $or: [
                         { username: { $regex: '.*' + search + '.*', $options: 'i' } },
-                        { fullname: { $regex: '.*' + search + '.*', $options: 'i' } }
+                        
                     ]
                 }, {
                     _id: { $ne: currentUserID } //assure that the user which is logged in cant search himself
